@@ -1,11 +1,15 @@
-resource "aws_instance" "my_instance" {
-  count         = length(aws_subnet.my_subnet.*.id)
+resource "aws_instance" "public_instance" {
+  count         = length(aws_subnet.public_subnet.*.id)
   ami           = "ami-06ed60ed1369448bd"  
-  instance_type = "t2.micro"     
-  key_name      = "form"       
+  instance_type = "t2.micro"
+  key_name      = "form" 
   vpc_security_group_ids = [aws_security_group.app1_sg01.id] 
-  subnet_id     = aws_subnet.my_subnet[count.index].id
+  subnet_id     = aws_subnet.public_subnet[count.index].id
   associate_public_ip_address = true
+
+  tags = {
+    Name = "instance-public-${element(["a", "b", "c"], count.index)}"
+  }
 
 user_data = base64encode(<<-EOF
     #!/bin/bash
